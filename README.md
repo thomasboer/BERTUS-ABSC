@@ -25,9 +25,9 @@ Van Berkum, Van Megen, Savelkoul, Weterman, and Frasincar ([2021](https://doi.or
     - Run prepare_bert.py and prepare_bert_split.py for every domain of interest.
 - If you use other datasets, tune the hyperparameters:
   - run main_hyper.py for LCR-Rot-hop++ hyperparameters.
-  - run main_hyper_DIWS.py for DIWS hyperparameters.
+  - run main_hyper_BERTUS.py for BERTUS hyperparameters.
   - If you are using the same datasets, you can use pre-set values in main_test.py.
-- Run main_test.py to train and test the DIWS-LCR-Rot-hop++ model.
+- Run main_test.py to train and test the BERTUS-LCR-Rot-hop++ model.
   - Make sure to set writable = 1 in config.py if you want to save the results.
 
 ## References
