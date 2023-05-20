@@ -1,7 +1,8 @@
-# DIWS model for regular training and testing
+# BERTUS model for regular training and testing
+# BERTUS
 #
-# https://github.com/ejoone/DIWS-ABSC
-
+# Adapted from DIWS
+# https://github.com/ejoone/DIWS-ABSC/tree/main
 import numpy as np
 import random
 from config import *
