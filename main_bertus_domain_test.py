@@ -1,13 +1,9 @@
-# Main training and testing
+# Main trining and testing
 #
-# BERTUS
-#
-# Adapted from DIWS
-# https://github.com/ejoone/DIWS-ABSC/tree/main
-#
+# https://github.com/ejoone/DIWS-ABSC
 
 import nltk
-import BERTUS_model
+import BERTUS_test
 import lcr_model_mask
 from config import *
 from load_data import *
@@ -17,22 +13,24 @@ nltk.download('punkt')
 tf.set_random_seed(1)
 
 def main(_):
-    apex_domain = ["Apex", 2004, 0.0001, 0.9, 10, 30, 1, 1, 0,0]
-    camera_domain = ["Camera", 2004, 0.0001, 0.85, 8, 15, 1, 1, 0,0]
-    hotel_domain = ["hotel", 2015, 0.0001, 0.99, 5, 15, 1, 1, 0,0]
-    nokia_domain = ["Nokia", 2004, 0.0001, 0.95, 15, 10, 1, 1, 0,0]
-    domains = [hotel_domain,nokia_domain,camera_domain,apex_domain]
+    apex_domain = ["Apex", 2004, 0.0001, 0.9, 10, 30, 0.8, 0.1, 0,0.2]
+    camera_domain = ["Camera", 2004, 0.0001, 0.85, 15, 15, 0.8, 0.1, 0,0.2]
+    hotel_domain = ["hotel", 2015, 0.0001, 0.99, 10, 15, 0.8, 0.1, 0,0]
+    nokia_domain = ["Nokia", 2004, 0.0001, 0.95, 15, 10, 0.8, 0.1, 0,0]
+    domains = [camera_domain,hotel_domain,apex_domain,nokia_domain]
 
     for domain in domains:
         main_perdomain(domain)
 
 
 def main_perdomain(domain):
+
     set_hyper_flags(learning_rate=0.09, keep_prob=0.4, momentum=0.85, l2_reg=0.0001)
     set_other_flags(source_domain="Creative", source_year=2004, target_domain=domain[0], target_year=domain[1])
-    print('main run DIWS')
-    attention_final_ouput, source_sen_len, target_sen_len, numdata_source, numdata_target = BERTUS_model.main(
+    print('main run BERTUS')
+    attention_final_ouput, source_sen_len, target_sen_len, numdata_source, numdata_target = BERTUS_test.main(
         FLAGS.source_path, FLAGS.target_path, domain[2], domain[3], domain[4], domain[5], domain[6], domain[7], domain[8],domain[9])
+
 
     print('current domain:', domain[0])
     set_hyper_flags(learning_rate=0.09, keep_prob=0.4, momentum=0.85, l2_reg=0.0001)
@@ -66,7 +64,7 @@ def get_masker(attention_final_main, source_sen_len, target_sen_len, numdata_sou
     for row in attention_final:
         row_nonzero = row[row != 0]
         if row_nonzero.size != 0:  # if row_nonzero is not empty
-            threshold_abs = 1
+            threshold_abs = np.percentile(row_nonzero, FLAGS.mask_threshold)
         else:  # if row_nonzero is empty
             threshold_abs = 1
         col_index = 0
@@ -174,7 +172,8 @@ def set_other_flags(source_domain, source_year, target_domain, target_year):
     FLAGS.target_embedding = "data/programGeneratedData/" + FLAGS.embedding_type + "_" + FLAGS.target_domain + "_" + str(
         FLAGS.target_year) + "_" + str(FLAGS.embedding_dim) + ".txt"
 
-    FLAGS.results_file = "data/programGeneratedData/RESULTS/" + str(FLAGS.embedding_dim) + "_threshold" + "_" + "results_" + FLAGS.source_domain + "_" + FLAGS.target_domain + "_" + str(
+    FLAGS.results_file = "data/programGeneratedData/RESULTS/" + str(FLAGS.embedding_dim) + "_threshold" + str(
+        FLAGS.mask_threshold) + "_" + "results_" + FLAGS.source_domain + "_" + FLAGS.target_domain + "_" + str(
         FLAGS.year) + ".txt"
 
     FLAGS.results_file_nomask = "data/programGeneratedData/RESULTS/" + str(
